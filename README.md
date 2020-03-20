@@ -37,18 +37,44 @@
 ## Firebase
 [Домашняя страница](https://firebase.google.com/)
 + Есть бесплатный тарифный план
++ Authentication
++ Real time database
++ Data storage
 
 ## CloudBoost
 [Домашняя страница](https://cloudboost.io/)
++ План стартует от $79 в месяц
++ Authentication
++ Real time database
++ Data storage
++ Search
++ Relations
 
 ## Rocket Chat
 [Домашняя страница](https://rocket.chat/)
 
 ## SendBird
 [Домашняя страница](https://sendbird.com)
++ Есть бесплатный тарифный план до 25 открытых сессий, далее цена не прозрачна
++ чат 1 на 1
++ груповой чат
++ статус сообщения (набирается, отправлен, доставлено, прочитано)
++ обмен файлами
++ Push notifications
++ REST API
++ SDK для iOS, Android
 
 ## QuickBlox
 [Домашняя страница](https://quickblox.com)
++ Есть бесплатный тарифный план до 1000 пользователей
++ чат 1 на 1
++ груповой чат
++ статус сообщения (набирается, отправлен, доставлено, прочитано)
++ редактирование и удаление своих сообщений
++ Push notifications
++ REST API
++ SDK для iOS, Android, React Native, Flutter,
++ Документация по React Native SDK, Flutter SDK
 
 ## Twilio
 [Домашняя страница](https://www.twilio.com)
@@ -63,7 +89,7 @@
 + REST API
 + SDK для iOS, Android
 
-[Features](https://www.twilio.com/chat/features);
+[Features](https://www.twilio.com/chat/features);<br/>
 [JS SDK](http://media.twiliocdn.com/sdk/js/chat/releases/3.3.4/docs/)
 
 ## Kustomer
@@ -77,3 +103,12 @@
 
 ## Rave Chat
 [Домашняя страница](https://www.revechat.com/)
++ План стартует от $13.5 за агента в месяц
++ чат 1 на 1
++ Есть возможность совместной работы
+  + навигации агента вместе с клиетом
+  + подсветка и рисование
+  + голосовой и видео чат
+
+## Сыылки и дополнительные материалы
+- [What is the best BaaS for a chat-based app?](https://www.quora.com/What-is-the-best-BaaS-for-a-chat-based-app)
