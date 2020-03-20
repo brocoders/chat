@@ -29,6 +29,7 @@
 - [SendBird](#sendbird)
 - [QuickBlox](#quickblox)
 - [Twilio](#twilio)
+- [Live Chat](#live-chat)
 - [Kustomer](#kustomer)
 - [TalkJS](#talkjs)
 - [Zendesk Chat](#zendesk-chat)
@@ -64,6 +65,8 @@
 + REST API
 + SDK для iOS, Android
 
+[JS SDK](https://docs.sendbird.com/javascript)
+
 ## QuickBlox
 [Домашняя страница](https://quickblox.com)
 + Есть бесплатный тарифный план до 1000 пользователей
@@ -75,6 +78,8 @@
 + REST API
 + SDK для iOS, Android, React Native, Flutter,
 + Документация по React Native SDK, Flutter SDK
+
+[JS SDK](https://docs.quickblox.com/docs/js-quick-start)
 
 ## Twilio
 [Домашняя страница](https://www.twilio.com)
@@ -92,14 +97,22 @@
 [Features](https://www.twilio.com/chat/features);<br/>
 [JS SDK](http://media.twiliocdn.com/sdk/js/chat/releases/3.3.4/docs/)
 
+## Live Chat
+[Домашняя страница](https://www.livechatinc.com/ru/)
++ План стартует от $19 за агента в месяц при ежемесячной оплате и $16 при годовой
+
 ## Kustomer
 [Домашняя страница](https://www.kustomer.com)
++ План стартует от $99 за клиента в месяц
 
 ## TalkJS
 [Домашняя страница](https://talkjs.com/)
++ План стартует от $59 в месяц
+В наличии готовый виджеты кторые можно кастомизировать стилями
 
 ## Zendesk Chat
 [Домашняя страница](https://www.zendesk.com/chat/)
++ План стартует от $5 в месяц за агента
 
 ## Rave Chat
 [Домашняя страница](https://www.revechat.com/)
