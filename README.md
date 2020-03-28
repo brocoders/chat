@@ -95,7 +95,8 @@
 + SDK для iOS, Android
 
 [Features](https://www.twilio.com/chat/features);<br/>
-[JS SDK](http://media.twiliocdn.com/sdk/js/chat/releases/3.3.4/docs/)
+[JS SDK](http://media.twiliocdn.com/sdk/js/chat/releases/3.3.4/docs/)<br/>
+[Guides](https://www.twilio.com/docs/chat/channels?code-sample=code-create-a-channel-13&code-language=JavaScript&code-sdk-version=default)
 
 ## Live Chat
 [Домашняя страница](https://www.livechatinc.com/ru/)

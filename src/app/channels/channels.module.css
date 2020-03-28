@@ -1,0 +1,7 @@
+.container {
+  padding: 10px;
+  height: 100%;
+  border: 1px solid var(--grin-color);
+  background-color: #fff;
+  border-radius: 4px;
+}
