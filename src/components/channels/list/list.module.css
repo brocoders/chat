@@ -1,0 +1,29 @@
+.container {
+  position: relative;
+  padding: 20px 0;
+}
+
+.title {
+  color: var(--grin-color);
+  margin-bottom: 10px;
+}
+.item {
+  color: var(--grin-color);
+  list-style-type: none;
+}
+
+.btn {
+  width: 100%;
+  height: 40px;
+  cursor: pointer;
+  background: none;
+  text-align-last: left;
+  padding: 0 8px;
+  border: 0 none;
+  font-size: 16px;
+}
+.btn:disabled {
+  color: #fff;
+  background-color: #2CAE7C;
+  font-weight: bold;
+}

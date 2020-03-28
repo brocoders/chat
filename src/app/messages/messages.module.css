@@ -1,0 +1,8 @@
+.container {
+  display: grid;
+  height: 100%;
+  grid-template-rows: 1fr 40px;
+  position: relative;
+  padding: 10px;
+  background-color: var(--light-color);
+}
