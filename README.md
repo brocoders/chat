@@ -96,7 +96,7 @@
 
 [Features](https://www.twilio.com/chat/features);<br/>
 [JS SDK](http://media.twiliocdn.com/sdk/js/chat/releases/3.3.4/docs/)<br/>
-[Guides](../doc/twilio)
+[Guides](./doc/twilio)
 
 ## Live Chat
 [Домашняя страница](https://www.livechatinc.com/ru/)
