@@ -3,7 +3,7 @@ import { Paginator } from 'twilio-chat/lib/interfaces/paginator';
 import flatMap from 'lodash/flatMap';
 import uniqBy from 'lodash/uniqBy';
 import * as adapters from './adapters';
-import { ChannelItem, ChannelList, ChannelGroup } from './Types';
+import { ChannelItem, ChannelList, ChannelGroup, MessageItem } from './Types';
 
 const DELEMITER = '#';
 
@@ -39,4 +39,12 @@ export function getGroupChannelName(channel: ChannelItem): string {
 export function getPrivatChannelTitle(name: string, user?: string): string {
   const users = name.split(DELEMITER);
   return users.filter(f => f !== user).join('');
+}
+
+function sortByDate<T extends Record<K, Date>, K extends keyof T>(key: K) {
+  return (a: T, b: T) => a[key].getTime() - b[key].getTime();
+}
+
+export function mergeMessage(a: ReadonlyArray<MessageItem>, b:  ReadonlyArray<MessageItem>) {
+  return uniqBy(a.concat(b), m => m.sid).sort(sortByDate('timestamp'));
 }

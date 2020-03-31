@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Client } from 'twilio-chat';
 import { Channel } from 'twilio-chat/lib/channel';
 import { Message } from 'twilio-chat/lib/message';
+import debounce from 'lodash/debounce';
 import ChatContext from './context';
 import ChatError from './ChatError';
 import {
@@ -9,6 +10,7 @@ import {
   channelGroup,
   getGroupChannelName,
   getPrivatChannelTitle,
+  mergeMessage,
 } from './helper';
 import {
   MessageItem,
@@ -107,6 +109,8 @@ class Provider extends React.Component<Props, State> {
       client.getUserChannelDescriptors(),
     ]);
 
+    console.log(channels)
+
     const group = channelGroup(channels);
     
     this.setState({
@@ -157,18 +161,17 @@ class Provider extends React.Component<Props, State> {
     }
   }
 
-  onJoinChannel = async(channel: Channel) => {
-    try {
-      const messages = await channel.getMessages();
-      if (channel.uniqueName === this.state.currentChanel) {
-        this.setState({
-          messages: adapters.messagesAdapter(messages.items),
-        });
-      }
-    } catch (err) {
-      console.warn(err);
+  _joinChannel = (channel: Channel) => {
+    console.log(channel, '>');
+    if (this.state.currentChanel !== channel.uniqueName) {
+      this.setState({
+        currentChanel: channel.uniqueName,
+        messages: [],
+      });
     }
   };
+
+  onJoinChannel = debounce(this._joinChannel, 500);
 
   onMessageAdd = (message: Message) => {
     if (message.channel.uniqueName === this.state.currentChanel) {
@@ -178,29 +181,38 @@ class Provider extends React.Component<Props, State> {
     }
   }
 
-  getMessage = async(channel: Channel): Promise<ReadonlyArray<MessageItem>> => {
-    try {
-      const pageMessage = await channel.getMessages();
-      return adapters.messagesAdapter(pageMessage.items);
-    } catch (err) {
-      throw err;
-    }
-  } 
-
-  handleJoinChannel = async(name: string) => {
+  getMessages = async(name: string, pageSize?: number, anchor?: number, direction?: string): Promise<void> => {
     try {
       const client = await this.chatClient();
       const channel = await client.getChannelByUniqueName(name);
-      if (channel.status !== 'joined') {
-        await channel.join();
-      }
-      const messages = await this.getMessage(channel);
+      const pageMessage = await channel.getMessages(pageSize, anchor, direction);
+      console.log(pageMessage, '#');
+      const nextMessages = adapters.messagesAdapter(pageMessage.items);
       this.setState({
-        currentChanel: name,
-        messages,
+        messages: mergeMessage(this.state.messages, nextMessages),
       });
     } catch (err) {
       console.warn(err);
+    }
+  } 
+
+  handleJoinChannel = async(name: string): Promise<void> => {
+    if (this.state.currentChanel !== name) {
+      await new Promise((resolve) => {
+        this.setState({
+          currentChanel: name,
+          messages: [],
+        }, () => { resolve() });
+      });
+      try {
+        const client = await this.chatClient();
+        const channel = await client.getChannelByUniqueName(name);
+        if (channel.status !== 'joined') {
+          await channel.join();
+        }
+      } catch (err) {
+        console.warn(err);
+      }
     }
   }
 
@@ -225,6 +237,7 @@ class Provider extends React.Component<Props, State> {
       createGroupChannel: this.createGroupChannel,
       createPrivatChannel: this.createPrivatChannel,
       joinChannel: this.handleJoinChannel,
+      getMessage: this.getMessages,
       onSendMessage: this.handleSandMessage,
       getGroupChannelName: getGroupChannelName,
       getPrivatChannelName: getGroupChannelName,

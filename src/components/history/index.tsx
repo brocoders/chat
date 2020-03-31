@@ -8,6 +8,7 @@ interface Props {
   list: ReadonlyArray<MessageItem>;
   user: string;
   createChannel: (peer: string, friendlyName: string) => Promise<void>;
+  getMessage: () => void;
 }
 
 interface Item extends MessageItem {
@@ -36,7 +37,7 @@ function Item({ body, author, timestamp, onAuthor, disabled }: Item ) {
   )
 }
 
-function MessagesHistory({ list, user, createChannel }: Props) {
+function MessagesHistory({ list, user, createChannel, getMessage }: Props) {
 
   const container = React.useRef<HTMLDivElement>(null);
 

@@ -21,6 +21,7 @@ export interface Context {
   createGroupChannel: (name: string, description: string) => Promise<void>;
   createPrivatChannel: (peer: string, description: string) => Promise<void>;
   joinChannel: (n: string) => Promise<void>;
+  getMessage: (name: string, pageSize?: number, anchor?: number, direction?: string) => Promise<void>;
   onSendMessage: (n: string, m: string) => Promise<void>;
   getGroupChannelName: (channel: ChannelItem) => string;
   getPrivatChannelName: (channel: ChannelItem) => string;
