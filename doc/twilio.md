@@ -17,15 +17,15 @@
 ### Быстрый старт
 Обернем в провайдер компонет в котором будит находится чат.
 
- ```
+ ```jsx
   <ChatProvider>
     <App />
   </ChatProvider>
  ```
 Совсем не обязательно оборачивать все приложение, достаточно лиш компонент верхнего уровня в котором мы будим использовать чат.
 
-Сомпонеты в которых мы хотим пользоватся API необходимо обернуть в декоратор
-```
+Компонеты в которых мы хотим пользоватся API необходимо обернуть в декоратор
+```jsx
 function Component(props) {
   return (
     <div>
@@ -35,16 +35,50 @@ function Component(props) {
 }
 export chatConnect(Component);
 ```
+Можно также использовать хук [useContext](https://ru.reactjs.org/docs/hooks-reference.html#usecontext).
 
 ### API
 В примере реализованны базовые методы минимально необходимые для работы интеграции:
-* connect
-* createGroupChannel
-* createPrivatChannel
-* joinChannel
-* getMessage
-* onSendMessage
-* getGroupChannelName
-* getPrivatChannelName
-* getGroupChannelTitle
-* getPrivatChannelTitle
+* [connect](#connect)
+* [createGroupChannel](#createGroupChannel)
+* [createPrivatChannel](#createPrivatChannel)
+* [joinChannel](#joinChannel)
+* [getMessage](#getMessage)
+* [sendMessage](№sendMessage)
+* [getGroupChannelName](#getGroupChannelName)
+* [getPrivatChannelName](#getPrivatChannelName)
+* [getGroupChannelTitle](#getGroupChannelTitle)
+* [getPrivatChannelTitle](#getPrivatChannelTitle)
+
+#### connect
+Вызываем для того чтоб авторизоватся и установить соединение.
+```typescript
+connect(getToken: () => Promise<string>, user: string);
+```
+
+#### createGroupChannel
+Используем для создания группового канала
+
+#### createPrivatChannel
+Используем для создания канала 1х1
+
+#### joinChannel
+Переключаемся на соответствующий канал
+
+#### getMessage
+Загружаем сообщения из канала
+
+#### sendMessage
+Отправляем сообщение в канал
+
+#### getGroupChannelName
+Функция формирующая имя группового канала из его параметров
+
+#### getPrivatChannelName
+Функция формирующая имя приватного канала из его параметров
+
+#### getGroupChannelTitle
+Функция формирующая отображаемое имя группового канала из его параметров
+
+#### getPrivatChannelTitle
+Функция формирующая отображаемое имя приватного канала из его параметров
