@@ -3,21 +3,20 @@ import { Client } from 'twilio-chat';
 import { Channel } from 'twilio-chat/lib/channel';
 import { Message } from 'twilio-chat/lib/message';
 import debounce from 'lodash/debounce';
+import set from 'lodash/fp/set';
 import ChatContext from './context';
 import ChatError from './ChatError';
 import {
   createChannelName,
-  channelGroup,
-  getGroupChannelName,
-  getPrivatChannelTitle,
+  channelCollection,
   mergeMessage,
+  channelGroup,
 } from './helper';
 import {
   MessageItem,
   Context,
-  ChannelList,
-  ChannelItem,
   GetToken,
+  ChannelCollection,
 } from './Types';
 import * as adapters from './adapters';
 
@@ -25,20 +24,16 @@ interface Props {
   children: React.ReactNode;
 }
 
-type ChannelsName = 'groupChannels' | 'privatChannels';
-
-type ChannelState<T extends ChannelsName = ChannelsName> = Readonly<Record<T, ChannelList>>;
-
-interface State extends ChannelState {
-  currentChanel: string | null,
-  messages: ReadonlyArray<MessageItem>,
+interface State {
+  channels: ChannelCollection;
+  currentChanel: string | null;
+  messages: ReadonlyArray<MessageItem>;
 }
 
 class Provider extends React.Component<Props, State> {
 
   state = {
-    groupChannels: [],
-    privatChannels: [],
+    channels: {},
     currentChanel: null,
     messages: [],
   }
@@ -109,13 +104,8 @@ class Provider extends React.Component<Props, State> {
       client.getUserChannelDescriptors(),
     ]);
 
-    console.log(channels)
-
-    const group = channelGroup(channels);
-    
     this.setState({
-      privatChannels: group.private,
-      groupChannels: group.public,
+      channels: channelCollection(channels),
     });
   };
 
@@ -127,11 +117,9 @@ class Provider extends React.Component<Props, State> {
       };
       const client = await this.chatClient();
       const channel = await client.createChannel(option);
-      const channelList: ChannelList = this.state.groupChannels;
       this.setState({
-        groupChannels: channelList.concat(
-          adapters.channelToChannelItem(channel),
-        )
+        ...this.state.channels,
+        [channel.uniqueName]: adapters.channelToChannelItem(channel),
       });
     } catch (err) {
       console.warn(err);
@@ -150,11 +138,9 @@ class Provider extends React.Component<Props, State> {
         }
       });
       await Promise.all([ channel.invite(peer), channel.join() ]);
-      const channelList: ChannelList = this.state.privatChannels;
       this.setState({
-        groupChannels: channelList.concat(
-          adapters.channelToChannelItem(channel),
-        )
+        ...this.state.channels,
+        [channel.uniqueName]: adapters.channelToChannelItem(channel),
       });
     } catch (err) {
       console.warn(err);
@@ -162,7 +148,6 @@ class Provider extends React.Component<Props, State> {
   }
 
   _joinChannel = (channel: Channel) => {
-    console.log(channel, '>');
     if (this.state.currentChanel !== channel.uniqueName) {
       this.setState({
         currentChanel: channel.uniqueName,
@@ -186,10 +171,14 @@ class Provider extends React.Component<Props, State> {
       const client = await this.chatClient();
       const channel = await client.getChannelByUniqueName(name);
       const pageMessage = await channel.getMessages(pageSize, anchor, direction);
-      console.log(pageMessage, '#');
+      const lastMessage = adapters.getLastMessageIndex(channel);
+      if (channel.lastConsumedMessageIndex < lastMessage) {
+        await channel.setAllMessagesConsumed();
+      }
       const nextMessages = adapters.messagesAdapter(pageMessage.items);
       this.setState({
         messages: mergeMessage(this.state.messages, nextMessages),
+        channels: set([name, 'unreadMessageCount'])(0)(this.state.channels),
       });
     } catch (err) {
       console.warn(err);
@@ -226,24 +215,21 @@ class Provider extends React.Component<Props, State> {
     }
   }
 
-  getPrivatChannelTitle = (channel: ChannelItem): string => {
-    return getPrivatChannelTitle(channel, this.user);
-  }
-
   get api(): Context {
+    const { channels, currentChanel, messages } = this.state;
+    const group = channelGroup(channels);
     return {
-      isConnected: false,
       connect: this.connectHandler,
       createGroupChannel: this.createGroupChannel,
       createPrivatChannel: this.createPrivatChannel,
       joinChannel: this.handleJoinChannel,
       getMessage: this.getMessages,
       onSendMessage: this.handleSandMessage,
-      getGroupChannelName: getGroupChannelName,
-      getPrivatChannelName: getGroupChannelName,
-      getGroupChannelTitle: getGroupChannelName,
-      getPrivatChannelTitle: this.getPrivatChannelTitle,
-      ...this.state,
+      privatChannels: group.private,
+      groupChannels: group.public,
+      currentChanel,
+      messages,
+      channels,
     }
   }
 
