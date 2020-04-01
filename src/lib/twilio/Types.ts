@@ -27,7 +27,7 @@ export interface Context {
   createPrivatChannel: (peer: string, description: string) => Promise<void>;
   joinChannel: (n: string) => Promise<void>;
   getMessage: (name: string, pageSize?: number, anchor?: number, direction?: string) => Promise<void>;
-  onSendMessage: (n: string, m: string) => Promise<void>;
+  sendMessage: (n: string, m: string) => Promise<void>;
   currentChanel: string | null;
   channels: Record<string, ChannelItem>;
   privatChannels: ReadonlyArray<ChannelItem>;

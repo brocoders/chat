@@ -8,7 +8,7 @@ interface Props extends Context {
   user: string;
 };
 
-function Messages({ user, onSendMessage, messages, currentChanel, createPrivatChannel, getMessage }: Props) {
+function Messages({ user, sendMessage, messages, currentChanel, createPrivatChannel, getMessage }: Props) {
 
   const handleGetMessage = React.useCallback(() => {
     if (currentChanel) {
@@ -18,9 +18,9 @@ function Messages({ user, onSendMessage, messages, currentChanel, createPrivatCh
 
   const handleSend = React.useCallback((m: string) => {
     if (typeof currentChanel === 'string') {
-      onSendMessage(currentChanel, m);
+      sendMessage(currentChanel, m);
     }
-  }, [onSendMessage, currentChanel]);
+  }, [sendMessage, currentChanel]);
 
   React.useEffect(() => { handleGetMessage(); }, [currentChanel, handleGetMessage]);
 

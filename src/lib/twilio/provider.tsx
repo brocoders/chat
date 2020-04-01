@@ -4,13 +4,12 @@ import { Channel } from 'twilio-chat/lib/channel';
 import { Message } from 'twilio-chat/lib/message';
 import debounce from 'lodash/debounce';
 import set from 'lodash/fp/set';
+import get from 'lodash/get';
 import ChatContext from './context';
 import ChatError from './ChatError';
 import {
   createChannelName,
-  channelCollection,
   mergeMessage,
-  channelGroup,
 } from './helper';
 import {
   MessageItem,
@@ -97,15 +96,13 @@ class Provider extends React.Component<Props, State> {
     client
       .on('messageAdded', this.onMessageAdd)
       .on('channelJoined', this.onJoinChannel)
+      .on('channelInvited', this.onInvite)
       .on('tokenAboutToExpire', this.updateToken);
-    
-    const channels = await Promise.all([
-      client.getPublicChannelDescriptors(),
-      client.getUserChannelDescriptors(),
-    ]);
+
+    const shannels = await client.getSubscribedChannels();
 
     this.setState({
-      channels: channelCollection(channels),
+      channels: adapters.channetsToCollection(shannels),
     });
   };
 
@@ -157,6 +154,19 @@ class Provider extends React.Component<Props, State> {
   };
 
   onJoinChannel = debounce(this._joinChannel, 500);
+
+  _handleInvite = (channel: Channel) => {
+    const { channels } = this.state;
+    if (!get(channels, channel.uniqueName)) {
+      const ch = adapters.channelToChannelItem(channel);
+      console.log(ch, channels);
+      this.setState({
+        channels: set(channel.uniqueName)(ch)(channels)
+      });
+    } 
+  }
+
+  onInvite = debounce(this._handleInvite, 500);
 
   onMessageAdd = (message: Message) => {
     if (message.channel.uniqueName === this.state.currentChanel) {
@@ -217,14 +227,14 @@ class Provider extends React.Component<Props, State> {
 
   get api(): Context {
     const { channels, currentChanel, messages } = this.state;
-    const group = channelGroup(channels);
+    const group = adapters.channelGroup(channels);
     return {
       connect: this.connectHandler,
       createGroupChannel: this.createGroupChannel,
       createPrivatChannel: this.createPrivatChannel,
       joinChannel: this.handleJoinChannel,
       getMessage: this.getMessages,
-      onSendMessage: this.handleSandMessage,
+      sendMessage: this.handleSandMessage,
       privatChannels: group.private,
       groupChannels: group.public,
       currentChanel,

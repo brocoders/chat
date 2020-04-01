@@ -39,16 +39,19 @@ export chatConnect(Component);
 
 ### API
 В примере реализованны базовые методы минимально необходимые для работы интеграции:
+#### Методы
 * [connect](#connect)
 * [createGroupChannel](#createGroupChannel)
 * [createPrivatChannel](#createPrivatChannel)
 * [joinChannel](#joinChannel)
 * [getMessage](#getMessage)
 * [sendMessage](№sendMessage)
-* [getGroupChannelName](#getGroupChannelName)
-* [getPrivatChannelName](#getPrivatChannelName)
-* [getGroupChannelTitle](#getGroupChannelTitle)
-* [getPrivatChannelTitle](#getPrivatChannelTitle)
+#### 
+* [currentChanel](#currentChanel)
+* [channels](#channels)
+* [privatChannels](#privatChannels)
+* [groupChannels](#groupChannels)
+* [messages](#messages)
 
 #### connect
 Вызываем для того чтоб авторизоватся и установить соединение.
@@ -71,14 +74,17 @@ connect(getToken: () => Promise<string>, user: string);
 #### sendMessage
 Отправляем сообщение в канал
 
-#### getGroupChannelName
-Функция формирующая имя группового канала из его параметров
+#### currentChanel
+Активный канал
 
-#### getPrivatChannelName
-Функция формирующая имя приватного канала из его параметров
+#### channels
+Коллекция каналов
 
-#### getGroupChannelTitle
-Функция формирующая отображаемое имя группового канала из его параметров
+#### privatChannels
+Массив каналов 1х1
 
-#### getPrivatChannelTitle
-Функция формирующая отображаемое имя приватного канала из его параметров
+#### groupChannels
+Массив груповых каналов
+
+#### messages
+Массив сообщеений

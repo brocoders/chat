@@ -7,7 +7,7 @@ const ChatContext = React.createContext<Context>({
   createPrivatChannel: () => Promise.resolve(),
   joinChannel: () => Promise.resolve(),
   getMessage: () => Promise.resolve(),
-  onSendMessage: () => Promise.resolve(),
+  sendMessage: () => Promise.resolve(),
   currentChanel: null,
   channels: {},
   privatChannels: [],
