@@ -4,7 +4,7 @@ import Messages from './messages';
 import Channels from './channels';
 
 function App() {
-  const user: string = 'user2@brocoders.com';
+  const user: string = 'test@brocoders.com';
   return (
     <div className={styles.container}>
       <header className={styles.header}></header>

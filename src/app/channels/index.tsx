@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { chatConnect, Context } from 'lib/twilio';
+import { chatConnect, Context, getPrivatChannelTitle, ChannelItem } from 'lib/twilio';
 import { Create, ChannelList } from 'components/channels';
 import { options, handler } from './helpers'
 import styles from './channels.module.css';
@@ -15,6 +15,8 @@ function Channels({ user, connect, createGroupChannel, joinChannel, currentChane
     connect(getToken, user);
   }, [connect, user]);
 
+  const getName = ({ uniqueName }: ChannelItem) => uniqueName;
+
   return (
     <section className={styles.container}>
       <Create onCreate={createGroupChannel} />
@@ -23,16 +25,16 @@ function Channels({ user, connect, createGroupChannel, joinChannel, currentChane
         channels={props.groupChannels}
         onJoin={joinChannel}
         currentChanel={currentChanel}
-        getName={props.getGroupChannelName}
-        getTitle={props.getGroupChannelTitle}
+        getName={getName}
+        getTitle={getName}
       />
       <ChannelList
         title="Direct messages"
         channels={props.privatChannels}
         onJoin={joinChannel}
         currentChanel={currentChanel}
-        getName={props.getPrivatChannelName}
-        getTitle={props.getPrivatChannelTitle}
+        getName={getName}
+        getTitle={(c) => getPrivatChannelTitle(c, user)}
       />
     </section>
   )

@@ -8,13 +8,21 @@ interface Props extends Context {
   user: string;
 };
 
-function Messages({ user, onSendMessage, messages, currentChanel, createPrivatChannel }: Props) {
+function Messages({ user, sendMessage, messages, currentChanel, createPrivatChannel, getMessage }: Props) {
+
+  const handleGetMessage = React.useCallback(() => {
+    if (currentChanel) {
+      getMessage(currentChanel);
+    }
+  }, [getMessage, currentChanel])
 
   const handleSend = React.useCallback((m: string) => {
     if (typeof currentChanel === 'string') {
-      onSendMessage(currentChanel, m);
+      sendMessage(currentChanel, m);
     }
-  }, [onSendMessage, currentChanel]);
+  }, [sendMessage, currentChanel]);
+
+  React.useEffect(() => { handleGetMessage(); }, [currentChanel, handleGetMessage]);
 
   return (
     <div className={styles.container}>
@@ -22,6 +30,7 @@ function Messages({ user, onSendMessage, messages, currentChanel, createPrivatCh
         list={messages}
         user={user}
         createChannel={createPrivatChannel}
+        getMessage={handleGetMessage}
       />
       <SendMessage onSend={handleSend} message="" />
     </div>

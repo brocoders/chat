@@ -1,4 +1,5 @@
 import * as React from 'react';
+import cx from 'classnames';
 import styles from './list.module.css';
 
 interface Props<T> {
@@ -10,29 +11,38 @@ interface Props<T> {
   getName: (d: T) => string;
 }
 
-function ChannelList<T>({ title, channels, onJoin, currentChanel, ...props }: Props<T>) {
+interface Item {
+  unreadMessageCount: number;
+}
+
+function ChannelList<T extends Item>({ title, channels, onJoin, currentChanel, ...props }: Props<T>) {
 
   const joinHandler = React.useCallback(
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       const name = e.currentTarget.getAttribute('data-name') as string;
       onJoin(name);
     }, [onJoin]);
-
   return (
     <section className={styles.container}>
       <h2 className={styles.title}>{title}</h2>
       <ul className={styles.list}>
         {
           channels.map(e => (
-            <li key={props.getName(e)} className={styles.item}>
+            <li
+              key={props.getName(e)}
+              className={cx(styles.item, { [styles.active]: props.getName(e) === currentChanel })}
+            >
               <button
                 data-name={props.getName(e)}
                 className={styles.btn}
                 type="button"
                 onClick={joinHandler}
                 disabled={props.getName(e) === currentChanel}
-              >{props.getTitle(e)}</button>
-            </li>
+              >
+                <span className={styles.name}>{props.getTitle(e)}</span>
+                <span className={styles.counter}>{e.unreadMessageCount || null}</span>
+              </button>
+            </li> 
           ))
         }
       </ul>

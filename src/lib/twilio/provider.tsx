@@ -2,20 +2,20 @@ import * as React from 'react';
 import { Client } from 'twilio-chat';
 import { Channel } from 'twilio-chat/lib/channel';
 import { Message } from 'twilio-chat/lib/message';
+import debounce from 'lodash/debounce';
+import set from 'lodash/fp/set';
+import get from 'lodash/get';
 import ChatContext from './context';
 import ChatError from './ChatError';
 import {
   createChannelName,
-  channelGroup,
-  getGroupChannelName,
-  getPrivatChannelTitle,
+  mergeMessage,
 } from './helper';
 import {
   MessageItem,
   Context,
-  ChannelList,
-  ChannelItem,
   GetToken,
+  ChannelCollection,
 } from './Types';
 import * as adapters from './adapters';
 
@@ -23,20 +23,16 @@ interface Props {
   children: React.ReactNode;
 }
 
-type ChannelsName = 'groupChannels' | 'privatChannels';
-
-type ChannelState<T extends ChannelsName = ChannelsName> = Readonly<Record<T, ChannelList>>;
-
-interface State extends ChannelState {
-  currentChanel: string | null,
-  messages: ReadonlyArray<MessageItem>,
+interface State {
+  channels: ChannelCollection;
+  currentChanel: string | null;
+  messages: ReadonlyArray<MessageItem>;
 }
 
 class Provider extends React.Component<Props, State> {
 
   state = {
-    groupChannels: [],
-    privatChannels: [],
+    channels: {},
     currentChanel: null,
     messages: [],
   }
@@ -100,18 +96,13 @@ class Provider extends React.Component<Props, State> {
     client
       .on('messageAdded', this.onMessageAdd)
       .on('channelJoined', this.onJoinChannel)
+      .on('channelInvited', this.onInvite)
       .on('tokenAboutToExpire', this.updateToken);
-    
-    const channels = await Promise.all([
-      client.getPublicChannelDescriptors(),
-      client.getUserChannelDescriptors(),
-    ]);
 
-    const group = channelGroup(channels);
-    
+    const shannels = await client.getSubscribedChannels();
+
     this.setState({
-      privatChannels: group.private,
-      groupChannels: group.public,
+      channels: adapters.channetsToCollection(shannels),
     });
   };
 
@@ -123,11 +114,9 @@ class Provider extends React.Component<Props, State> {
       };
       const client = await this.chatClient();
       const channel = await client.createChannel(option);
-      const channelList: ChannelList = this.state.groupChannels;
       this.setState({
-        groupChannels: channelList.concat(
-          adapters.channelToChannelItem(channel),
-        )
+        ...this.state.channels,
+        [channel.uniqueName]: adapters.channelToChannelItem(channel),
       });
     } catch (err) {
       console.warn(err);
@@ -146,29 +135,38 @@ class Provider extends React.Component<Props, State> {
         }
       });
       await Promise.all([ channel.invite(peer), channel.join() ]);
-      const channelList: ChannelList = this.state.privatChannels;
       this.setState({
-        groupChannels: channelList.concat(
-          adapters.channelToChannelItem(channel),
-        )
+        ...this.state.channels,
+        [channel.uniqueName]: adapters.channelToChannelItem(channel),
       });
     } catch (err) {
       console.warn(err);
     }
   }
 
-  onJoinChannel = async(channel: Channel) => {
-    try {
-      const messages = await channel.getMessages();
-      if (channel.uniqueName === this.state.currentChanel) {
-        this.setState({
-          messages: adapters.messagesAdapter(messages.items),
-        });
-      }
-    } catch (err) {
-      console.warn(err);
+  _joinChannel = (channel: Channel) => {
+    if (this.state.currentChanel !== channel.uniqueName) {
+      this.setState({
+        currentChanel: channel.uniqueName,
+        messages: [],
+      });
     }
   };
+
+  onJoinChannel = debounce(this._joinChannel, 500);
+
+  _handleInvite = (channel: Channel) => {
+    const { channels } = this.state;
+    if (!get(channels, channel.uniqueName)) {
+      const ch = adapters.channelToChannelItem(channel);
+      console.log(ch, channels);
+      this.setState({
+        channels: set(channel.uniqueName)(ch)(channels)
+      });
+    } 
+  }
+
+  onInvite = debounce(this._handleInvite, 500);
 
   onMessageAdd = (message: Message) => {
     if (message.channel.uniqueName === this.state.currentChanel) {
@@ -178,29 +176,42 @@ class Provider extends React.Component<Props, State> {
     }
   }
 
-  getMessage = async(channel: Channel): Promise<ReadonlyArray<MessageItem>> => {
-    try {
-      const pageMessage = await channel.getMessages();
-      return adapters.messagesAdapter(pageMessage.items);
-    } catch (err) {
-      throw err;
-    }
-  } 
-
-  handleJoinChannel = async(name: string) => {
+  getMessages = async(name: string, pageSize?: number, anchor?: number, direction?: string): Promise<void> => {
     try {
       const client = await this.chatClient();
       const channel = await client.getChannelByUniqueName(name);
-      if (channel.status !== 'joined') {
-        await channel.join();
+      const pageMessage = await channel.getMessages(pageSize, anchor, direction);
+      const lastMessage = adapters.getLastMessageIndex(channel);
+      if (channel.lastConsumedMessageIndex < lastMessage) {
+        await channel.setAllMessagesConsumed();
       }
-      const messages = await this.getMessage(channel);
+      const nextMessages = adapters.messagesAdapter(pageMessage.items);
       this.setState({
-        currentChanel: name,
-        messages,
+        messages: mergeMessage(this.state.messages, nextMessages),
+        channels: set([name, 'unreadMessageCount'])(0)(this.state.channels),
       });
     } catch (err) {
       console.warn(err);
+    }
+  } 
+
+  handleJoinChannel = async(name: string): Promise<void> => {
+    if (this.state.currentChanel !== name) {
+      await new Promise((resolve) => {
+        this.setState({
+          currentChanel: name,
+          messages: [],
+        }, () => { resolve() });
+      });
+      try {
+        const client = await this.chatClient();
+        const channel = await client.getChannelByUniqueName(name);
+        if (channel.status !== 'joined') {
+          await channel.join();
+        }
+      } catch (err) {
+        console.warn(err);
+      }
     }
   }
 
@@ -214,23 +225,21 @@ class Provider extends React.Component<Props, State> {
     }
   }
 
-  getPrivatChannelTitle = (channel: ChannelItem): string => {
-    return getPrivatChannelTitle(channel, this.user);
-  }
-
   get api(): Context {
+    const { channels, currentChanel, messages } = this.state;
+    const group = adapters.channelGroup(channels);
     return {
-      isConnected: false,
       connect: this.connectHandler,
       createGroupChannel: this.createGroupChannel,
       createPrivatChannel: this.createPrivatChannel,
       joinChannel: this.handleJoinChannel,
-      onSendMessage: this.handleSandMessage,
-      getGroupChannelName: getGroupChannelName,
-      getPrivatChannelName: getGroupChannelName,
-      getGroupChannelTitle: getGroupChannelName,
-      getPrivatChannelTitle: this.getPrivatChannelTitle,
-      ...this.state,
+      getMessage: this.getMessages,
+      sendMessage: this.handleSandMessage,
+      privatChannels: group.private,
+      groupChannels: group.public,
+      currentChanel,
+      messages,
+      channels,
     }
   }
 
