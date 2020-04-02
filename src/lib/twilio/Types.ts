@@ -25,9 +25,9 @@ export interface Context {
   connect: (getToken: GetToken, user: string) => Promise<void>;
   createGroupChannel: (name: string, description: string) => Promise<void>;
   createPrivatChannel: (peer: string, description: string) => Promise<void>;
-  joinChannel: (n: string) => Promise<void>;
+  joinChannel: (name: string) => Promise<void>;
   getMessage: (name: string, pageSize?: number, anchor?: number, direction?: string) => Promise<void>;
-  sendMessage: (n: string, m: string) => Promise<void>;
+  sendMessage: (name: string, message: string | FormData) => Promise<void>;
   currentChanel: string | null;
   channels: Record<string, ChannelItem>;
   privatChannels: ReadonlyArray<ChannelItem>;
