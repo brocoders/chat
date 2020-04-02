@@ -215,7 +215,7 @@ class Provider extends React.Component<Props, State> {
     }
   }
 
-  handleSandMessage = async(name: string, message: string) => {
+  handleSandMessage = async(name: string, message: string | FormData) => {
     try {
       const client = await this.chatClient();
       const channel = await client.getChannelByUniqueName(name);
