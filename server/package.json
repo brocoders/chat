@@ -1,6 +1,6 @@
 {
   "name": "chat-middlend",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Middlend for chat",
   "main": "./src/index.ts",
   "author": "Alexandr Golovchuk",
