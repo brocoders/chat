@@ -68,7 +68,7 @@
 [JS SDK](https://docs.sendbird.com/javascript)
 
 ## QuickBlox
-[Домашняя страница](https://quickblox.com)
+[Домашняя страница](https://quickblox.com)<br/>
 [Отчет](./doc/quickblox.md)
 + есть бесплатный тарифный план до 1000 пользователей;
 + чат 1 на 1;
