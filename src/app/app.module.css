@@ -22,6 +22,7 @@
   position: relative;
   background-color: var(--light-color);
   padding: 10px 0 10px 10px;
+  overflow: hidden;
 }
 .main {
   grid-row-start: 2;
@@ -30,4 +31,5 @@
   grid-column-end: 3;
   position: relative;
   background-color: #F7FAFC;
+  overflow: hidden;
 }
