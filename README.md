@@ -69,34 +69,40 @@
 
 ## QuickBlox
 [Домашняя страница](https://quickblox.com)
-+ Есть бесплатный тарифный план до 1000 пользователей
-+ чат 1 на 1
-+ груповой чат
-+ статус сообщения (набирается, отправлен, доставлено, прочитано)
-+ редактирование и удаление своих сообщений
-+ Push notifications
-+ REST API
-+ SDK для iOS, Android, React Native, Flutter,
-+ Документация по React Native SDK, Flutter SDK
+[Отчет](./doc/quickblox.md)
++ есть бесплатный тарифный план до 1000 пользователей;
++ чат 1 на 1;
++ груповой чат;
++ статус сообщения (набирается, отправлен, доставлено, прочитано);
++ редактирование и удаление своих сообщений;
++ Push notifications;
++ REST API;
++ SDK для iOS, Android, React Native, Flutter;
++ документация по React Native SDK, Flutter SDK;
++ [JavaScript SDK](https://github.com/QuickBlox/quickblox-javascript-sdk) с открытым исходным кодом (License Apache 2.0);
+- пользователей нада создавать в сервисе ([QuickBlox dashboard](https://admin.quickblox.com/) or via API), проверка связки логин пароль происходин на строне сервиса;
+- [нет TypeScript Definition и пока не планируются](https://github.com/QuickBlox/quickblox-javascript-sdk/issues/299)
 
 [JS SDK](https://docs.quickblox.com/docs/js-quick-start)
 
 ## Twilio
 [Домашняя страница](https://www.twilio.com)
-+ Есть бесплатный тарифный план до 200 клиентов каждый следующий $0.03
-+ чат 1 на 1
-+ груповой чат
-+ статус сообщения (набирается, отправлен, доставлено, прочитано)
-+ обмен файлами
-+ Push notifications
-+ редактирование и удаление своих сообщений
-+ офлайн доставка сообщений
-+ REST API
-+ SDK для iOS, Android
+[Guides](./doc/twilio.md)
++ есть бесплатный тарифный план до 200 клиентов каждый следующий $0.03;
++ чат 1 на 1;
++ груповой чат;
++ статус сообщения (набирается, отправлен, доставлено, прочитано);
++ обмен файлами;
++ Push notifications;
++ редактирование и удаление своих сообщений;
++ офлайн доставка сообщений;
++ REST API;
++ SDK для iOS, Android;
++ есть TypeScript Definition;
++ Пользователи создаются на лету (не нада регистрировать в сервисе, связку логин пароль сервис не контролирует);
 
 [Features](https://www.twilio.com/chat/features);<br/>
 [JS SDK](http://media.twiliocdn.com/sdk/js/chat/releases/3.3.4/docs/)<br/>
-[Guides](./doc/twilio.md)
 
 ## Live Chat
 [Домашняя страница](https://www.livechatinc.com/ru/)
